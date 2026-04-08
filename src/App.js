@@ -20,14 +20,21 @@ export default function DigitalDachaApp() {
             "https://script.google.com/macros/s/AKfycbwAVOPk1Iz6Cnx90NSfeFlhnY9EgLJZzuUFInSnI7pADi7PqR6Lg5_DVk-HnoablJv9/exec",
             {
               method: "POST",
+              mode: "no-cors",
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+              },
               body: JSON.stringify({
                 answers: answers,
                 result: calculatedProfile.type,
                 profile: calculatedProfile,
                 comment: "quiz"
-              })
+              }),
+              keepalive: true
             }
-          ).catch((err) => console.error("Ошибка отправки в Google Sheets:", err));
+          ).catch((err) =>
+            console.error("Ошибка отправки в Google Sheets:", err)
+          );
         
           setTimeout(() => {
             setProfile(calculatedProfile);
