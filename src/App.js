@@ -25,6 +25,16 @@ function getUserId() {
   return userId;
 }
 
+function hasCompletedQuiz(userId) {
+  if (!userId) return false;
+  return localStorage.getItem(`dd_quiz_completed_${userId}`) === "true";
+}
+
+function markQuizCompleted(userId) {
+  if (!userId) return;
+  localStorage.setItem(`dd_quiz_completed_${userId}`, "true");
+}
+
 function getTrackingParams() {
   const params = new URLSearchParams(window.location.search);
 
@@ -81,23 +91,25 @@ export default function DigitalDachaApp() {
   const [loading, setLoading] = React.useState(false);
   const [profile, setProfile] = React.useState(null);
   const [submission, setSubmission] = React.useState(null);
+  const [showRepeatModal, setShowRepeatModal] = React.useState(false);
 
   React.useEffect(() => {
     const id = getUserId();
     setUserId(id);
   }, []);
 
-  const handleStart = () => {
+  const beginQuizSession = () => {
     if (!userId) return;
-
+  
     const newSessionId = generateId();
     setSessionId(newSessionId);
-
+  
     setStarted(true);
     setLoading(false);
     setProfile(null);
     setSubmission(null);
-
+    setShowRepeatModal(false);
+  
     sendEvent({
       event_type: "quiz_started",
       user_id: userId,
@@ -112,6 +124,17 @@ export default function DigitalDachaApp() {
       completed: false,
       cta_clicked: false,
     });
+  };
+  
+  const handleStart = () => {
+    if (!userId) return;
+  
+    if (hasCompletedQuiz(userId)) {
+      setShowRepeatModal(true);
+      return;
+    }
+  
+    beginQuizSession();
   };
 
   if (loading) return <LoadingScreen />;
@@ -160,6 +183,7 @@ export default function DigitalDachaApp() {
 
           sendEvent(submissionPayload);
           setSubmission(submissionPayload);
+          markQuizCompleted(userId);
 
           setTimeout(() => {
             setProfile(calculatedProfile);
@@ -170,7 +194,42 @@ export default function DigitalDachaApp() {
     );
   }
 
-  return <IntroScreen onStart={handleStart} />;
+  return (
+    <>
+      <IntroScreen onStart={handleStart} />
+  
+      {showRepeatModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center px-5 z-50">
+          <div className="bg-white text-black rounded-3xl p-6 max-w-sm w-full text-center">
+            <h2 className="text-xl font-semibold mb-4">
+              Вы уже проходили этот опрос
+            </h2>
+  
+            <p className="text-sm mb-6">
+              Похоже, вы уже заполняли этот квиз с этого устройства.
+              Хотите пройти его ещё раз?
+            </p>
+  
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={beginQuizSession}
+                className="w-full bg-black text-white p-3 rounded-xl"
+              >
+                Да, пройти ещё раз
+              </button>
+  
+              <button
+                onClick={() => setShowRepeatModal(false)}
+                className="w-full bg-gray-200 text-black p-3 rounded-xl"
+              >
+                Нет, не сейчас
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 function IntroScreen({ onStart }) {
