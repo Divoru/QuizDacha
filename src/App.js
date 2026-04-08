@@ -12,13 +12,20 @@ export default function DigitalDachaApp() {
     return (
       <Quiz
         onFinish={(answers) => {
-          console.log("ANSWERS:", answers);
-
           setLoading(true);
-
+        
+          fetch("ТВОЯ_ССЫЛКА_ИЗ_GOOGLE_SCRIPT", {
+            method: "POST",
+            body: JSON.stringify({
+              answers: answers,
+              result: calculateResult(answers),
+              comment: "quiz"
+            })
+          });
+        
           setTimeout(() => {
-            const calculatedProfile = calculateProfile(answers);
-            setProfile(calculatedProfile);
+            const type = calculateResult(answers);
+            setResult(type);
             setLoading(false);
           }, 4000);
         }}
