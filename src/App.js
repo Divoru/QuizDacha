@@ -232,7 +232,7 @@ function Quiz({ onFinish, sessionId, tracking }) {
     {
       type: "single",
       question:
-        'Представьте, что у вашей дачи появился "мозг". Какой стиль общения с ним вам ближе?',
+        'Представьте, что у вас есть идеальный личный помощник по даче, который всё умеет и всегда всё помнит. Как бы вы предпочли получать от него вести?',
       answers: [
         'Он просто молча все делает, а мне присылает отчет: "Готово, хозяин"',
         'Он пишет: "Я заметил мох на крыше, и уже подобрал трех мастеров, кого позвать?"',
@@ -256,7 +256,7 @@ function Quiz({ onFinish, sessionId, tracking }) {
         "Какая она — ваша идеальная дача? Можно ответить коротко, в 2–3 словах.",
       placeholder: "Например: тихая, ухоженная, беззаботная",
       helper:
-        "Желательно для более точного понимания, но не обязательно.",
+        "Если не затруднить, напишите ваш ответ — это поможет точнее понять Вашу дачу",
     },
   ];
 
@@ -367,19 +367,12 @@ function Quiz({ onFinish, sessionId, tracking }) {
 
             <p className="mt-3 text-sm text-white/45">{current.helper}</p>
 
-            <div className="flex flex-col gap-3 mt-5">
+            <div className="mt-5">
               <button
-                onClick={finishTextStep}
+                onClick={idealDacha.trim() ? finishTextStep : skipTextStep}
                 className="w-full bg-green-400 text-black p-4 rounded-xl font-semibold"
               >
-                Завершить
-              </button>
-
-              <button
-                onClick={skipTextStep}
-                className="w-full bg-white/10 text-white p-4 rounded-xl"
-              >
-                Пропустить
+                {idealDacha.trim() ? "Завершить" : "Пропустить и завершить"}
               </button>
             </div>
           </div>
