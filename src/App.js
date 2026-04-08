@@ -14,18 +14,23 @@ export default function DigitalDachaApp() {
         onFinish={(answers) => {
           setLoading(true);
         
-          fetch("https://script.google.com/macros/s/AKfycbwAVOPk1Iz6Cnx90NSfeFlhnY9EgLJZzuUFInSnI7pADi7PqR6Lg5_DVk-HnoablJv9/exec", {
-            method: "POST",
-            body: JSON.stringify({
-              answers: answers,
-              result: calculateResult(answers),
-              comment: "quiz"
-            })
-          });
+          const calculatedProfile = calculateProfile(answers);
+        
+          fetch(
+            "https://script.google.com/macros/s/AKfycbwAVOPk1Iz6Cnx90NSfeFlhnY9EgLJZzuUFInSnI7pADi7PqR6Lg5_DVk-HnoablJv9/exec",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                answers: answers,
+                result: calculatedProfile.type,
+                profile: calculatedProfile,
+                comment: "quiz"
+              })
+            }
+          ).catch((err) => console.error("Ошибка отправки в Google Sheets:", err));
         
           setTimeout(() => {
-            const type = calculateResult(answers);
-            setResult(type);
+            setProfile(calculatedProfile);
             setLoading(false);
           }, 4000);
         }}
