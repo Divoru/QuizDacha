@@ -287,6 +287,8 @@ function IntroScreen({ onStart }) {
           <br />
           С ним Вы сами выбираете ваш ритм жизни, а не подстраиваетесь
           под обстоятельства.
+          <br />
+          <br />
         </p>
 
         <p className="text-white text-lg mb-4 leading-relaxed">
