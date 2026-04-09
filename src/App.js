@@ -244,7 +244,7 @@ function IntroScreen({ onStart }) {
     <div className="h-screen bg-black text-white flex items-center justify-center px-5">
       <div className="max-w-md text-center">
       
-        {/* КАРТИНКА */}
+        {/* КАРТИНКА 1 */}
         <img
           src="/hero.jpg"
           alt="Баланс: дела и отдых"
@@ -268,7 +268,14 @@ function IntroScreen({ onStart }) {
           который знает вашу дачу, ничего не забывает<br />
           и еще берёт всю рутину на себя.
         </p>
-      
+  
+        {/* КАРТИНКА 2 */}
+        <img
+          src="/hero2.jpg"
+          alt="Баланс: дела и отдых"
+          className="w-full rounded-2xl mb-6"
+        />   
+            
         <p className="text-white/60 mb-6 leading-relaxed">
           Он напомнит, подскажет и избавит от лишних забот.<br />
           С ним Вы сами выбираете ваш ритм жизни, а не подстраиваетесь под обстоятельства.
