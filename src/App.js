@@ -264,6 +264,7 @@ function IntroScreen({ onStart }) {
           Вы больше отдыхаете и меньше волнуетесь.
           <br />
           <br />
+          <br />
         </p>
 
         <p className="text-white/70 mb-4 leading-relaxed">
