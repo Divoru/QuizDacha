@@ -260,18 +260,23 @@ function IntroScreen({ onStart }) {
         {/* ВТОРИЧНЫЙ ТЕКСТ */}
         <p className="text-white/80 mb-4 leading-relaxed">
           Когда всё на даче под контролем,<br />
-          вы больше отдыхаете и меньше волнуетесь.
+          Вы больше отдыхаете и меньше волнуетесь.
         </p>
       
         <p className="text-white/70 mb-4 leading-relaxed">
           Представьте заботливого помощника,<br />
           который знает вашу дачу, ничего не забывает<br />
-          и берёт рутину на себя.
+          и еще берёт всю рутину на себя.
         </p>
       
         <p className="text-white/60 mb-6 leading-relaxed">
           Он напомнит, подскажет и избавит от лишних забот.<br />
-          Вы диктуете правила, а не подстраиваетесь под сюрпризы дачи.
+          С ним Вы сами выбираете ваш ритм жизни, а не подстраиваетесь под обстоятельства.
+        </p>
+          
+        <p className="text-white/60 mb-6 leading-relaxed">
+          Ответьте на несколько простых вопросов,<br />
+          и мы покажем, как он может облегчить жизнь именно Вам.
         </p>
       
         {/* CTA */}
@@ -279,7 +284,7 @@ function IntroScreen({ onStart }) {
           onClick={onStart}
           className="w-full bg-green-400 text-black p-4 rounded-xl font-semibold text-lg hover:scale-105 transition"
         >
-          Проанализировать
+          Начать
         </button>
       </div>
     </div>
