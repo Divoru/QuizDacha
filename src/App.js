@@ -286,7 +286,7 @@ function IntroScreen({ onStart }) {
           под обстоятельства.
         </p>
 
-        <p className="text-white/60 mb-6 leading-relaxed">
+        <p className="text-white text-lg mb-4 leading-relaxed">
           Ответьте на несколько простых вопросов,
           <br />
           и мы покажем, как он может облегчить жизнь именно Вам.
