@@ -262,6 +262,8 @@ function IntroScreen({ onStart }) {
           Когда всё на даче под контролем,
           <br />
           Вы больше отдыхаете и меньше волнуетесь.
+          <br />
+          <br />
         </p>
 
         <p className="text-white/70 mb-4 leading-relaxed">
