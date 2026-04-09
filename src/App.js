@@ -92,6 +92,12 @@ export default function DigitalDachaApp() {
   const [profile, setProfile] = React.useState(null);
   const [submission, setSubmission] = React.useState(null);
   const [showRepeatModal, setShowRepeatModal] = React.useState(false);
+  const resetToIntro = () => {
+    setStarted(false);
+    setLoading(false);
+    setProfile(null);
+    setSubmission(null);
+  };
 
   React.useEffect(() => {
     const id = getUserId();
@@ -147,6 +153,7 @@ export default function DigitalDachaApp() {
         userId={userId}
         sessionId={sessionId}
         tracking={tracking}
+        onBackToIntro={resetToIntro}
       />
     );
   }
@@ -662,8 +669,10 @@ function ResultScreen({
   userId,
   sessionId,
   tracking,
+  onBackToIntro,
 }) {
   const [submitted, setSubmitted] = React.useState(false);
+  const [ctaLocked, setCtaLocked] = React.useState(false);
 
   const typeContent = {
     relax: {
@@ -828,9 +837,16 @@ function ResultScreen({
 
           <button
             onClick={handleInterested}
-            className="w-full bg-green-400 text-black p-4 rounded-xl font-semibold"
+            disabled={ctaLocked}
+            className={`w-full p-4 rounded-xl font-semibold ${
+              ctaLocked
+                ? "bg-green-300 text-black/60 cursor-not-allowed"
+                : "bg-green-400 text-black"
+            }`}
           >
-            Да, мне интересен такой помощник
+            {ctaLocked
+              ? "Интерес уже зафиксирован"
+              : "Да, мне интересен такой помощник"}
           </button>
         </div>
       </div>
@@ -849,7 +865,10 @@ function ResultScreen({
             </p>
 
             <button
-              onClick={() => setSubmitted(false)}
+              onClick={() => {
+                setSubmitted(false);
+                onBackToIntro();
+              }}
               className="w-full bg-black text-white p-3 rounded-xl"
             >
               Понятно
