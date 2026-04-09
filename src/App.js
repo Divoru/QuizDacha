@@ -243,25 +243,43 @@ function IntroScreen({ onStart }) {
   return (
     <div className="h-screen bg-black text-white flex items-center justify-center px-5">
       <div className="max-w-md text-center">
-        <div className="text-green-300 text-sm mb-3">Единое окно</div>
-
-        <h1 className="text-2xl mb-6">Цифровой помощник для вашей дачи</h1>
-
-        <p className="text-white/80 mb-4">
-          Он поможет сделать дачу удобнее именно для Вас: подскажет, что важно,
-          напомнит о нужном и избавит от лишних забот.
+      
+        {/* КАРТИНКА */}
+        <img
+          src="/hero.jpg"
+          alt="Баланс: дела и отдых"
+          className="w-full rounded-2xl mb-6"
+        />
+      
+        {/* ОСНОВНОЙ ТЕКСТ */}
+        <p className="text-white text-lg mb-4 leading-relaxed">
+          Да, иногда дача — это отдых.<br />
+          А иногда — бесконечный список дел.
         </p>
-
-        <p className="text-white/55 mb-8 text-sm">
-          Пройдите короткий тест — и помощник лучше поймёт Вашу дачу и Ваш образ
-          жизни.
+      
+        {/* ВТОРИЧНЫЙ ТЕКСТ */}
+        <p className="text-white/80 mb-4 leading-relaxed">
+          Когда всё на даче под контролем,<br />
+          вы больше отдыхаете и меньше волнуетесь.
         </p>
-
+      
+        <p className="text-white/70 mb-4 leading-relaxed">
+          Представьте заботливого помощника,<br />
+          который знает вашу дачу, ничего не забывает<br />
+          и берёт рутину на себя.
+        </p>
+      
+        <p className="text-white/60 mb-6 leading-relaxed">
+          Он напомнит, подскажет и избавит от лишних забот.<br />
+          Вы диктуете правила, а не подстраиваетесь под сюрпризы дачи.
+        </p>
+      
+        {/* CTA */}
         <button
           onClick={onStart}
-          className="w-full bg-green-400 text-black p-4 rounded-xl font-semibold"
+          className="w-full bg-green-400 text-black p-4 rounded-xl font-semibold text-lg hover:scale-105 transition"
         >
-          Начать
+          Проанализировать
         </button>
       </div>
     </div>
