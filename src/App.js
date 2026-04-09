@@ -241,51 +241,57 @@ export default function DigitalDachaApp() {
 
 function IntroScreen({ onStart }) {
   return (
-    <div className="h-screen bg-black text-white flex items-center justify-center px-5">
-      <div className="max-w-md text-center">
-      
+    <div className="min-h-screen bg-black text-white px-5 py-8">
+      <div className="max-w-md mx-auto text-center">
         {/* КАРТИНКА 1 */}
         <img
           src="/hero.jpg"
           alt="Баланс: дела и отдых"
           className="w-full rounded-2xl mb-6"
         />
-      
+
         {/* ОСНОВНОЙ ТЕКСТ */}
         <p className="text-white text-lg mb-4 leading-relaxed">
-          Да, иногда дача — это отдых.<br />
+          Да, иногда дача — это отдых.
+          <br />
           А иногда — бесконечный список дел.
         </p>
-      
+
         {/* ВТОРИЧНЫЙ ТЕКСТ */}
         <p className="text-white/80 mb-4 leading-relaxed">
-          Когда всё на даче под контролем,<br />
+          Когда всё на даче под контролем,
+          <br />
           Вы больше отдыхаете и меньше волнуетесь.
         </p>
-      
+
         <p className="text-white/70 mb-4 leading-relaxed">
-          Представьте заботливого помощника,<br />
-          который знает вашу дачу, ничего не забывает<br />
+          Представьте заботливого помощника,
+          <br />
+          который знает вашу дачу, ничего не забывает
+          <br />
           и еще берёт всю рутину на себя.
         </p>
-  
+
         {/* КАРТИНКА 2 */}
         <img
           src="/hero2.jpg"
-          alt="Баланс: дела и отдых"
-          className="w-full rounded-2xl mb-6"
-        />   
-            
+          alt="Помощник берет рутину на себя"
+          className="w-full max-w-sm mx-auto rounded-2xl mb-6"
+        />
+
         <p className="text-white/60 mb-6 leading-relaxed">
-          Он напомнит, подскажет и избавит от лишних забот.<br />
-          С ним Вы сами выбираете ваш ритм жизни, а не подстраиваетесь под обстоятельства.
+          Он напомнит, подскажет и избавит от лишних забот.
+          <br />
+          С ним Вы сами выбираете ваш ритм жизни, а не подстраиваетесь
+          под обстоятельства.
         </p>
-          
+
         <p className="text-white/60 mb-6 leading-relaxed">
-          Ответьте на несколько простых вопросов,<br />
+          Ответьте на несколько простых вопросов,
+          <br />
           и мы покажем, как он может облегчить жизнь именно Вам.
         </p>
-      
+
         {/* CTA */}
         <button
           onClick={onStart}
@@ -293,6 +299,14 @@ function IntroScreen({ onStart }) {
         >
           Начать
         </button>
+  
+        {/* КАРТИНКА 3 */}
+        <img
+          src="/hero3.jpg"
+          alt="Цифровой помощник"
+          className="w-full rounded-2xl mb-6"
+        />
+            
       </div>
     </div>
   );
