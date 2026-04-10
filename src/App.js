@@ -1045,13 +1045,10 @@ function ResultScreen({
             </button>
       
             <button
-              onClick={() => {
-                setSubmitted(false);
-                window.location.reload();
-              }}
+              onClick={handleSkipContact}
               className="text-sm text-black/50 underline"
             >
-              Пока не готов, вернуться
+              Я еще подумаю...
             </button>
       
           </div>
