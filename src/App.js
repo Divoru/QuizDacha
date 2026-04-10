@@ -185,7 +185,7 @@ export default function DigitalDachaApp() {
             answers: answers,
             ideal_dacha: idealDacha || "",
             profile: calculatedProfile,
-            profile_type: calculatedProfile.type,
+            profile_type: calculatedProfile.dachaType,
           };
 
           sendEvent(submissionPayload);
@@ -569,135 +569,150 @@ function calculateProfile(answers, idealDacha) {
     afterWeekend,
     fixingBehavior,
     freedTime,
-    assistantStyle,
+    assistantStyleAnswer,
     role,
   ] = answers;
 
-  let type = "comfort";
+  let dachaType = "control";
 
-  if (mainMeaning === "Отдых и тишина") type = "relax";
-  else if (mainMeaning === "Свои овощи и зелень к столу") type = "garden";
-  else if (
-    mainMeaning === "Ухоженный участок, которым приятно любоваться"
-  )
-    type = "beauty";
+  if (mainMeaning === "Отдых и тишина") dachaType = "relax";
+  else if (mainMeaning === "Свои овощи и зелень к столу") dachaType = "garden";
+  else if (mainMeaning === "Ухоженный участок, которым приятно любоваться")
+    dachaType = "beauty";
   else if (
     mainMeaning === "Чтобы всё было под контролем и ни о чем не беспокоиться"
   )
-    type = "control";
+    dachaType = "control";
 
-  let emotionalEntry = "neutral";
-  if (firstThought === "Наконец-то отдых, хочу расслабиться")
-    emotionalEntry = "rest";
-  else if (firstThought === "Надо проверить участок и всё привести в порядок")
-    emotionalEntry = "control";
+  let mindset = "check";
+  if (firstThought === "Наконец-то отдых, хочу расслабиться") mindset = "rest";
+  else if (
+    firstThought === "Надо проверить участок и всё привести в порядок"
+  )
+    mindset = "check";
   else if (
     firstThought === "Опять куча дел, вряд ли получится нормально отдохнуть"
   )
-    emotionalEntry = "overload";
-  else if (firstThought === "Нравится заниматься участком, это в удовольствие")
-    emotionalEntry = "enthusiast";
+    mindset = "tired";
+  else if (
+    firstThought === "Нравится заниматься участком, это в удовольствие"
+  )
+    mindset = "joy";
 
   let usageType = "medium";
   if (
     usage === "Живу здесь постоянно" ||
     usage === "Бываю почти каждые выходные"
-  )
+  ) {
     usageType = "high";
-  else if (usage === "Приезжаю время от времени") usageType = "medium";
-  else usageType = "low";
+  } else if (usage === "Приезжаю время от времени") {
+    usageType = "medium";
+  } else {
+    usageType = "low";
+  }
 
   let fatigue = "medium";
-  if (afterWeekend === "Чувствую себя скорее уставшим, чем отдохнувшим")
+  if (afterWeekend === "Чувствую себя скорее уставшим, чем отдохнувшим") {
     fatigue = "high";
-  else if (afterWeekend === "Немножко устал, но доволен")
+  } else if (afterWeekend === "Немножко устал, но доволен") {
     fatigue = "medium";
-  else if (afterWeekend === "Отдохнул и набрался сил") fatigue = "low";
-  else fatigue = "variable";
+  } else if (afterWeekend === "Отдохнул и набрался сил") {
+    fatigue = "low";
+  } else {
+    fatigue = "mixed";
+  }
 
-  let behavior = "mixed";
-  if (fixingBehavior === "Всегда самому интересно этим заняться")
-    behavior = "diy";
-  else if (fixingBehavior === "Звоню знакомым мастерам")
-    behavior = "trusted";
-  else if (fixingBehavior === "Ищу, кто бы мог это сделать")
-    behavior = "search";
-  else if (fixingBehavior === "Всегда откладываю, пока не станет срочно")
-    behavior = "avoid";
+  let problemSolving = "search";
+  if (fixingBehavior === "Всегда самому интересно этим заняться") {
+    problemSolving = "diy";
+  } else if (fixingBehavior === "Звоню знакомым мастерам") {
+    problemSolving = "trusted";
+  } else if (fixingBehavior === "Ищу, кто бы мог это сделать") {
+    problemSolving = "search";
+  } else if (fixingBehavior === "Всегда откладываю, пока не станет срочно") {
+    problemSolving = "procrastinate";
+  }
 
-  let desire = "rest";
-  if (freedTime === "Чаще звал бы друзей на шашлыки") desire = "social";
-  else if (
+  let dreamScenario = "relax";
+  if (freedTime === "Чаще звал бы друзей на шашлыки") {
+    dreamScenario = "social";
+  } else if (
     freedTime === "Просто лежал бы в гамаке с книгой или любовался природой"
-  )
-    desire = "silence";
-  else if (
+  ) {
+    dreamScenario = "relax";
+  } else if (
     freedTime ===
     "Занялся бы тем, что мне нравится: сажать редкие цветы, поливать газон…"
-  )
-    desire = "favorite";
-  else if (
+  ) {
+    dreamScenario = "hobby";
+  } else if (
     freedTime === "Ездил бы туда намного реже (чем тогда там еще заниматься?)"
-  )
-    desire = "distance";
+  ) {
+    dreamScenario = "leave";
+  }
 
-  let assistantMode = "planner";
+  let assistantStyle = "planner";
   if (
-    assistantStyle ===
+    assistantStyleAnswer ===
     'Он просто молча все делает, а мне присылает отчет: "Готово, хозяин"'
-  )
-    assistantMode = "done_for_you";
-  else if (
-    assistantStyle ===
+  ) {
+    assistantStyle = "silent";
+  } else if (
+    assistantStyleAnswer ===
     'Он пишет: "Я заметил мох на крыше, и уже подобрал трех мастеров, кого позвать?"'
-  )
-    assistantMode = "coordinator";
-  else if (
-    assistantStyle ===
+  ) {
+    assistantStyle = "consult";
+  } else if (
+    assistantStyleAnswer ===
     'Он советует: "Через месяц пора стричь туи, записать в календарь?"'
-  )
-    assistantMode = "planner";
-  else if (
-    assistantStyle === "Спасибо, но я лучше сам решу, когда и что мне делать"
-  )
-    assistantMode = "observer";
+  ) {
+    assistantStyle = "planner";
+  } else if (
+    assistantStyleAnswer === "Спасибо, но я лучше сам решу, когда и что мне делать"
+  ) {
+    assistantStyle = "self";
+  }
 
-  let ownershipStyle = "director";
-  if (
-    role ===
-    "Режиссер: Принимаю ключевые решения, но не занимаюсь рутиной и бытовухой"
-  )
-    ownershipStyle = "director";
-  else if (
-    role ===
-    "Партнер: Делаю все интересное сам, скучное пускай делает помощник"
-  )
-    ownershipStyle = "partner";
-  else if (
-    role === "Владелец: Хочу получать результат без лишнего моего участия"
-  )
-    ownershipStyle = "owner";
-  else if (
-    role === "Сторож: Мне спокойнее, если я сам все буду контролировать"
-  )
-    ownershipStyle = "guard";
+  let controlStyle = "director";
+  if (role === "Принимаю решения, но не занимаюсь рутиной") {
+    controlStyle = "director";
+  } else if (role === "Интересное делаю сам, остальное поручаю другим") {
+    controlStyle = "partner";
+  } else if (role === "Получаю результат без лишнего моего участия") {
+    controlStyle = "owner";
+  } else if (role === "Держу всё под личным контролем") {
+    controlStyle = "guard";
+  }
 
-  let readiness = "medium";
-  if (assistantMode === "done_for_you" || assistantMode === "coordinator")
-    readiness = "high";
-  else if (assistantMode === "planner") readiness = "medium";
-  else readiness = "low";
+  let delegationReadiness = "medium";
+  if (fatigue === "high" && controlStyle !== "guard") {
+    delegationReadiness = "high";
+  } else if (fatigue === "medium" || controlStyle === "guard") {
+    delegationReadiness = "medium";
+  } else {
+    delegationReadiness = "low";
+  }
+
+  let primaryPain = "uncertainty";
+  if (problemSolving === "search" || problemSolving === "trusted") {
+    primaryPain = "uncertainty";
+  } else if (problemSolving === "procrastinate" || mindset === "tired") {
+    primaryPain = "effort";
+  } else if (dreamScenario === "social" || dreamScenario === "relax") {
+    primaryPain = "time";
+  }
 
   return {
-    type,
-    emotionalEntry,
+    dachaType,
+    mindset,
     usageType,
     fatigue,
-    behavior,
-    desire,
-    assistantMode,
-    ownershipStyle,
-    readiness,
+    problemSolving,
+    dreamScenario,
+    assistantStyle,
+    controlStyle,
+    delegationReadiness,
+    primaryPain,
     raw: {
       firstThought,
       mainMeaning,
@@ -705,7 +720,7 @@ function calculateProfile(answers, idealDacha) {
       afterWeekend,
       fixingBehavior,
       freedTime,
-      assistantStyle,
+      assistantStyleAnswer,
       role,
       idealDacha: idealDacha || "",
     },
@@ -723,94 +738,110 @@ function ResultScreen({
   const [submitted, setSubmitted] = React.useState(false);
   const [ctaLocked, setCtaLocked] = React.useState(false);
 
-  const typeContent = {
+  const mindsetIntro = {
+    rest: "«Наконец-то отдых» — эта мысль согревает вас при каждом приезде.",
+    check:
+      "Вы относитесь к даче ответственно: первым делом — убедиться, что всё в порядке.",
+    tired:
+      "«Опять куча дел» — знакомое чувство? Вы приезжаете с мыслью о бесконечном списке.",
+    joy: "Вам нравится сам процесс заботы об участке — это ваша отдушина.",
+  };
+
+  const dachaTypeContent = {
     relax: {
-      title: "Вы хотите, чтобы дача возвращала силы 🌿",
-      intro:
-        "Для вас дача — это прежде всего место, где хочется выдохнуть, почувствовать тишину и побыть в хорошем состоянии.",
+      title: "Ваша дача — это пространство покоя и тишины 🌿",
+      text: "Главное здесь — отключиться от городской суеты и восстановить силы.",
     },
     garden: {
-      title: "Для вас дача — это польза, вкус и результат 🥕",
-      intro:
-        "Вам важно, чтобы дача приносила не только эмоции, но и ощутимый результат: урожай, порядок, чувство хозяйского смысла.",
+      title: "Ваша дача — это источник урожая и пользы 🥕",
+      text: "Вы цените возможность выращивать своё, а не только отдыхать.",
     },
     beauty: {
-      title: "Ваша дача — это пространство красоты и удовольствия 🌸",
-      intro:
-        "Для вас важно, чтобы участок выглядел красиво, гармонично и радовал глаз — чтобы на него хотелось смотреть и возвращаться.",
+      title: "Ваша дача — это пространство красоты и вдохновения 🌸",
+      text: "Для вас важно, чтобы участок радовал глаз и выглядел ухоженно.",
     },
     control: {
-      title: "Вам важны спокойствие и уверенность в даче 🏡",
-      intro:
-        "Для вас дача — это место, где всё должно быть предсказуемо, понятно и под контролем, без лишней суеты.",
+      title: "Ваша дача — это зона вашего спокойствия 🏡",
+      text: "Вы хотите быть уверены, что всё под контролем, и ничто не отвлекает от отдыха.",
     },
   };
 
   const fatigueText = {
-    high: "Сейчас дача, вероятно, забирает у вас больше сил, чем хотелось бы.",
-    medium:
-      "Сейчас дача приносит и удовольствие, и нагрузку — баланс пока неидеален.",
-    low: "У вас уже есть хорошая база для комфортной дачи, и её можно сделать еще приятнее.",
-    variable:
-      "Похоже, многое зависит от сезона, задач и текущего состояния участка.",
-  };
-
-  const behaviorText = {
-    diy: "Вы не боитесь участвовать сами и цените ощущение личного участия.",
-    trusted:
-      "Вы привыкли решать многое через проверенных людей и доверие для вас очень важно.",
-    search:
-      "Сейчас одна из главных сложностей — каждый раз заново искать, кому можно доверить задачу.",
-    avoid:
-      "Похоже, часть вопросов хочется просто отодвинуть подальше и не тратить на них силы.",
-    mixed: "Ваш подход к даче гибкий, но не всегда системный.",
-  };
-
-  const assistantText = {
-    done_for_you:
-      "Вам ближе формат, в котором помощник берет рутину на себя и оставляет вам только результат.",
-    coordinator:
-      "Вам нужен помощник, который замечает важное заранее и помогает быстро принять решение.",
-    planner:
-      "Вам ближе спокойный формат подсказок, напоминаний и понятного плана.",
-    observer:
-      "Вам важно сохранить контроль, но при этом видеть картину целиком и ничего не упускать.",
-  };
-
-  const roleText = {
-    director:
-      "Вы — Режиссер: любите управлять важным, но не хотите тратить себя на бытовую рутину.",
-    partner:
-      "Вы — Партнер: интересное хочется оставить себе, а скучное — делегировать.",
-    owner:
-      "Вы — Владелец: для вас важен итоговый результат, а не процесс.",
-    guard:
-      "Вы — Сторож: чувство контроля для вас важнее удобства.",
-  };
-
-  const desireText = {
-    social:
-      "Если освободить ваши силы, дача станет более живой, гостеприимной и радостной.",
-    silence:
-      "Если убрать лишние заботы, дача сможет по-настоящему стать местом отдыха и тишины.",
-    favorite:
-      "Если снять рутину, вы сможете оставить себе только то, что действительно нравится.",
-    distance:
-      "Сейчас дача, возможно, требует от вас больше, чем дает. Здесь особенно важен помощник, который снижает нагрузку.",
-  };
-
-  const ctaText = {
     high:
-      "Похоже, формат цифрового помощника вам действительно близок — особенно если он будет простым, понятным и полезным.",
+      "После выходных вы чувствуете себя уставшим — как будто сменили один вид работы на другой. Это сигнал, что дача забирает больше сил, чем даёт.",
     medium:
-      "Такой помощник может хорошо вам подойти, если будет помогать без перегруза и лишних уведомлений.",
+      "Вы немного устаёте, но довольны результатом. Однако даже эту усталость можно уменьшить, оставив только приятные хлопоты.",
     low:
-      "Даже если вам не нужен “сервис ради сервиса”, помощник может быть полезен как тихий инструмент контроля и подсказок.",
+      "Вы возвращаетесь отдохнувшим и полным сил — значит, текущий ритм вам подходит.",
+    mixed:
+      "Бывает по-разному, но в глубине души хочется, чтобы хороших дней было больше.",
   };
 
-  const data = typeContent[profile.type];
+  const problemSolvingText = {
+    diy:
+      "Вы любите разбираться во всём самостоятельно. Вам не нужен тот, кто сделает за вас, но нужен тот, кто подскажет, направит и упростит поиск решений.",
+    trusted:
+      "У вас есть проверенные мастера, но их контакты не всегда под рукой, а иногда их занятость подводит.",
+    search:
+      "Каждый раз поиск исполнителя превращается в квест. Это отнимает время и нервы, которых на даче должно быть в избытке.",
+    procrastinate:
+      "Вы откладываете задачи до последнего, потому что не хочется тратить на это драгоценные выходные. Знакомо?",
+  };
+
+  const controlStyleText = {
+    director:
+      "Вы — Режиссёр. Вы принимаете ключевые решения, но не хотите погружаться в рутину поиска и контроля. Вам нужен надёжный «второй пилот».",
+    partner:
+      "Вы — Партнёр. Всё интересное вы делаете сами, а скучное и техническое готовы доверить тому, кто разбирается.",
+    owner:
+      "Вы — Владелец. Вам важен результат: красивый участок и работающие системы. Как это достигается — не ваша забота.",
+    guard:
+      "Вы — Хранитель порядка. Вам важно держать руку на пульсе и быть в курсе всего, что происходит. Но даже Хранителю нужен надёжный инструмент наблюдения и подсказок.",
+  };
+
+  const dreamScenarioText = {
+    social:
+      "Если освободить время, вы бы чаще звали друзей на шашлыки и наслаждались общением.",
+    relax:
+      "Если освободить время, вы бы просто лежали в гамаке с книгой или любовались природой — без чувства вины.",
+    hobby:
+      "Если освободить время, вы бы занялись тем, что вам по-настоящему нравится: редкие цветы, уход за газоном, создание уюта.",
+    leave:
+      "Честно говоря, если бы дача не требовала столько сил, вы бы, возможно, ездили туда гораздо реже. Но ситуацию можно изменить, не отказываясь от дачи.",
+  };
+
+  const assistantFitText = {
+    silent:
+      "Вам подходит помощник, который действует тихо и присылает только отчёт: «Готово, можно отдыхать».",
+    consult:
+      "Вам подходит помощник, который замечает важное, предлагает варианты и спрашивает ваше решение.",
+    planner:
+      "Вам подходит помощник-планировщик: он напоминает о сезонных делах и помогает ничего не упустить.",
+    self:
+      "Вы предпочитаете решать всё сами, но даже в этом случае иметь под рукой базу знаний и проверенных мастеров — никогда не лишнее.",
+  };
+
+  const ctaBridgeText = {
+    high:
+      "Если вы хотите, чтобы дача перестала забирать силы и начала приносить чистое удовольствие — этот помощник создан для вас.",
+    medium:
+      "Даже если вам не нужен «сервис ради сервиса», такой помощник может стать удобным инструментом контроля и подсказок. Хотите узнать, как именно?",
+    low:
+      "Похоже, вы отлично справляетесь сами. Но если захотите немного облегчить рутину или иметь под рукой проверенные контакты — помощник всегда рядом.",
+  };
+
+  const ctaButtonText = {
+    high: "Да, хочу посмотреть, как это работает",
+    medium: "Покажите, что он умеет",
+    low: "Просто посмотреть возможности",
+  };
+
+  const data = dachaTypeContent[profile.dachaType];
 
   const handleInterested = () => {
+    if (ctaLocked) return;
+
+    setCtaLocked(true);
     setSubmitted(true);
 
     sendEvent({
@@ -829,7 +860,7 @@ function ResultScreen({
       answers: submission?.answers || [],
       ideal_dacha: submission?.ideal_dacha || "",
       profile: profile,
-      profile_type: profile.type,
+      profile_type: profile.dachaType,
     });
   };
 
@@ -843,30 +874,38 @@ function ResultScreen({
 
           <h1 className="text-2xl mb-4">{data.title}</h1>
 
-          <p className="mb-4 text-white/80">{data.intro}</p>
+          <p className="mb-4 text-white/85 leading-relaxed">
+            {mindsetIntro[profile.mindset]}
+          </p>
 
-          <div className="space-y-3 mb-6">
-            <div className="bg-white/10 p-3 rounded-xl">
-              {fatigueText[profile.fatigue]}
-            </div>
+          <p className="mb-4 text-white/80 leading-relaxed">
+            {data.text}
+          </p>
 
-            <div className="bg-white/10 p-3 rounded-xl">
-              {behaviorText[profile.behavior]}
-            </div>
+          <p className="mb-4 text-white/70 leading-relaxed">
+            {fatigueText[profile.fatigue]}
+          </p>
 
-            <div className="bg-white/10 p-3 rounded-xl">
-              {assistantText[profile.assistantMode]}
-            </div>
+          <p className="mb-4 text-white/70 leading-relaxed">
+            {problemSolvingText[profile.problemSolving]}
+          </p>
 
-            <div className="bg-white/10 p-3 rounded-xl">
-              {roleText[profile.ownershipStyle]}
-            </div>
-          </div>
+          <p className="mb-4 text-white/75 leading-relaxed">
+            {controlStyleText[profile.controlStyle]}
+          </p>
+
+          <p className="mb-4 text-white/70 leading-relaxed">
+            {dreamScenarioText[profile.dreamScenario]}
+          </p>
+
+          <p className="mb-6 text-green-300 leading-relaxed font-medium">
+            {assistantFitText[profile.assistantStyle]}
+          </p>
 
           {profile.raw.idealDacha && (
             <div className="mb-6 rounded-2xl bg-green-400/10 border border-green-400/20 p-4">
               <div className="text-sm text-green-300 mb-2">
-                Ваша дача мечты
+                Ваша идеальная дача
               </div>
               <div className="text-white/90 italic">
                 “{profile.raw.idealDacha}”
@@ -874,20 +913,14 @@ function ResultScreen({
             </div>
           )}
 
-          <p className="mb-4 text-white/70">{desireText[profile.desire]}</p>
-
-          <p className="mb-6 text-white/65">{ctaText[profile.readiness]}</p>
-
-          <div className="mb-4 text-white/55 text-sm">
-            Если вам интересно, как такой помощник мог бы работать именно для
-            вашей дачи — можно оставить предварительный интерес. Мы покажем, как
-            это может выглядеть на практике.
+          <div className="mb-5 text-white/80 text-base leading-relaxed">
+            {ctaBridgeText[profile.delegationReadiness]}
           </div>
 
           <button
             onClick={handleInterested}
             disabled={ctaLocked}
-            className={`w-full p-4 rounded-xl font-semibold ${
+            className={`w-full p-4 rounded-xl font-semibold text-base ${
               ctaLocked
                 ? "bg-green-300 text-black/60 cursor-not-allowed"
                 : "bg-green-400 text-black"
@@ -895,7 +928,7 @@ function ResultScreen({
           >
             {ctaLocked
               ? "Интерес уже зафиксирован"
-              : "Да, мне интересен такой помощник"}
+              : ctaButtonText[profile.delegationReadiness]}
           </button>
         </div>
       </div>
