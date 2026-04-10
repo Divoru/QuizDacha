@@ -825,7 +825,7 @@ function ResultScreen({
     high:
       "Если вы хотите, чтобы дача перестала забирать силы и начала приносить чистое удовольствие — этот помощник создан для вас.",
     medium:
-      "Даже если вам не нужен «сервис ради сервиса», такой помощник может стать удобным инструментом контроля и подсказок. Хотите узнать, как именно?",
+      "Даже если вы отлично справляетесь сами, иметь под рукой того, кто ничего не забывает и вовремя подскажет — значит сохранить силы для того, что вам действительно важно. Хотите посмотреть, как это будет работать именно для вашей дачи?",
     low:
       "Похоже, вы отлично справляетесь сами. Но если захотите немного облегчить рутину или иметь под рукой проверенные контакты — помощник всегда рядом.",
   };
@@ -833,7 +833,7 @@ function ResultScreen({
   const ctaButtonText = {
     high: "Да, хочу посмотреть, как это работает",
     medium: "Покажите, что он умеет",
-    low: "Просто посмотреть возможности",
+    low: "Посмотреть возможности помощника",
   };
 
   const data = dachaTypeContent[profile.dachaType];
@@ -882,25 +882,34 @@ function ResultScreen({
             {data.text}
           </p>
 
-          <p className="mb-4 text-white/70 leading-relaxed">
-            {fatigueText[profile.fatigue]}
-          </p>
+          <div className="mb-5 bg-white/10 border border-white/10 p-4 rounded-2xl">
+            <div className="text-sm text-white/40 mb-1">Как сейчас</div>
+            <div className="text-white">{fatigueText[profile.fatigue]}</div>
+          </div>
 
-          <p className="mb-4 text-white/70 leading-relaxed">
-            {problemSolvingText[profile.problemSolving]}
-          </p>
+          <div className="mb-5 space-y-3">
+            <div className="bg-white/5 p-3 rounded-xl">
+              {problemSolvingText[profile.problemSolving]}
+            </div>
+          
+            <div className="bg-white/5 p-3 rounded-xl">
+              {controlStyleText[profile.controlStyle]}
+            </div>
+          </div>
 
-          <p className="mb-4 text-white/75 leading-relaxed">
-            {controlStyleText[profile.controlStyle]}
-          </p>
+          <div className="mb-5 bg-green-400/10 border border-green-400/20 p-4 rounded-2xl">
+            <div className="text-sm text-green-300 mb-1">Как может быть</div>
+            <div className="text-white/90">
+              {dreamScenarioText[profile.dreamScenario]}
+            </div>
+          </div>
 
-          <p className="mb-4 text-white/70 leading-relaxed">
-            {dreamScenarioText[profile.dreamScenario]}
-          </p>
-
-          <p className="mb-6 text-green-300 leading-relaxed font-medium">
-            {assistantFitText[profile.assistantStyle]}
-          </p>
+          <div className="mb-6 p-4 rounded-2xl bg-green-400/15 border border-green-400/30">
+            <div className="text-sm text-green-300 mb-1">Ваш формат</div>
+            <div className="text-white font-medium">
+              {assistantFitText[profile.assistantStyle]}
+            </div>
+          </div>
 
           {profile.raw.idealDacha && (
             <div className="mb-6 rounded-2xl bg-green-400/10 border border-green-400/20 p-4">
@@ -913,17 +922,17 @@ function ResultScreen({
             </div>
           )}
 
-          <div className="mb-5 text-white/80 text-base leading-relaxed">
+          <div className="mb-6 text-white text-base leading-relaxed">
             {ctaBridgeText[profile.delegationReadiness]}
           </div>
 
           <button
             onClick={handleInterested}
             disabled={ctaLocked}
-            className={`w-full p-4 rounded-xl font-semibold text-base ${
+            className={`w-full p-4 rounded-xl font-semibold text-base transition transform ${
               ctaLocked
                 ? "bg-green-300 text-black/60 cursor-not-allowed"
-                : "bg-green-400 text-black"
+                : "bg-green-400 text-black hover:scale-105"
             }`}
           >
             {ctaLocked
