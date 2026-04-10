@@ -873,6 +873,64 @@ function ResultScreen({
       profile_type: profile.dachaType,
     });
   };
+  
+  const handleSubmitContact = () => {
+    if (!contact.trim()) return;
+  
+    setSending(true);
+  
+    sendEvent({
+      event_type: "lead_submitted",
+      user_id: userId,
+      session_id: sessionId,
+      source: tracking.source,
+      variant: tracking.variant,
+      segment: tracking.segment,
+      medium: tracking.medium,
+      campaign: tracking.campaign,
+      step_index: submission?.step_count || 0,
+      step_count: submission?.step_count || 0,
+      completed: true,
+      cta_clicked: true,
+      contact: contact.trim(),
+      answers: submission?.answers || [],
+      ideal_dacha: submission?.ideal_dacha || "",
+      profile: profile,
+      profile_type: profile.dachaType,
+    });
+  
+    setTimeout(() => {
+      setSubmitted(false);
+      onBackToIntro();
+    }, 800);
+  };
+
+  const handleSkipContact = () => {
+    sendEvent({
+      event_type: "lead_skipped",
+      user_id: userId,
+      session_id: sessionId,
+      source: tracking.source,
+      variant: tracking.variant,
+      segment: tracking.segment,
+      medium: tracking.medium,
+      campaign: tracking.campaign,
+      step_index: submission?.step_count || 0,
+      step_count: submission?.step_count || 0,
+      completed: true,
+      cta_clicked: true,
+      answers: submission?.answers || [],
+      ideal_dacha: submission?.ideal_dacha || "",
+      profile: profile,
+      profile_type: profile.dachaType,
+    });
+  
+    setSubmitted(false);
+    onBackToIntro();
+  };
+
+  const [contact, setContact] = React.useState("");
+  const [sending, setSending] = React.useState(false);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-5 py-8">
@@ -955,25 +1013,47 @@ function ResultScreen({
       {submitted && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center px-5 z-50">
           <div className="bg-white text-black rounded-3xl p-6 max-w-sm w-full text-center">
+      
             <h2 className="text-xl font-semibold mb-4">
-              Интерес зафиксирован ✅
+              Мы подготовили для вас персональную демонстрацию
             </h2>
-
-            <p className="text-sm mb-6">
-              Спасибо. Мы увидели ваш интерес и свяжемся с вами, когда будем
-              готовы показать, как такой цифровой помощник может работать именно
-              для вашей дачи.
+      
+            <p className="text-sm mb-5 text-black/80">
+              На основе ваших ответов мы собрали короткий сценарий,
+              в котором видно, как помощник будет работать именно с вашей дачей.
             </p>
-
+      
+            <div className="text-left text-sm mb-5 space-y-2">
+              <div>— подсказывает в нужный момент</div>
+              <div>— помогает не забывать важное</div>
+              <div>— освобождает ваше время</div>
+            </div>
+      
+            <input
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              placeholder="Телефон или WhatsApp / Telegram"
+              className="w-full border border-black/20 rounded-xl p-3 mb-4 outline-none"
+            />
+      
+            <button
+              onClick={handleSubmitContact}
+              disabled={sending}
+              className="w-full bg-black text-white p-3 rounded-xl mb-3"
+            >
+              {sending ? "Отправка..." : "Получить доступ к демонстрации"}
+            </button>
+      
             <button
               onClick={() => {
                 setSubmitted(false);
-                onBackToIntro();
+                window.location.reload();
               }}
-              className="w-full bg-black text-white p-3 rounded-xl"
+              className="text-sm text-black/50 underline"
             >
-              Понятно
+              Пока не готов, вернуться
             </button>
+      
           </div>
         </div>
       )}
