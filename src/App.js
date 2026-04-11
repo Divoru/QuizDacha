@@ -875,8 +875,15 @@ function ResultScreen({
   };
   
   const handleSubmitContact = () => {
-    if (!contact.trim()) return;
-  
+    if (!contact.trim()) {
+      setContactError(
+        "Пожалуйста, укажите контакт, чтобы мы могли отправить вам демонстрацию"
+      );
+      return;
+    }
+    
+    setContactError("");
+    
     setSending(true);
   
     sendEvent({
@@ -931,6 +938,7 @@ function ResultScreen({
 
   const [contact, setContact] = React.useState("");
   const [sending, setSending] = React.useState(false);
+  const [contactError, setContactError] = React.useState("");
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-5 py-8">
@@ -1031,11 +1039,20 @@ function ResultScreen({
       
             <input
               value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              placeholder="Телефон или WhatsApp / Telegram"
-              className="w-full border border-black/20 rounded-xl p-3 mb-4 outline-none"
+              onChange={(e) => {
+                setContact(e.target.value);
+                if (contactError) setContactError("");
+              }}
+              placeholder="Телефон или почта или мессенджер"
+              className="w-full border border-black/20 rounded-xl p-3 mb-2 outline-none"
             />
-      
+              
+            {contactError && (
+              <div className="text-red-500 text-sm mb-3 text-left">
+                {contactError}
+              </div>
+            )}
+                
             <button
               onClick={handleSubmitContact}
               disabled={sending}
