@@ -107,6 +107,8 @@ export default function DigitalDachaApp() {
   const beginQuizSession = () => {
     if (!userId) return;
   
+    const activeVariant = getActiveVariant(tracking.variant);
+  
     const newSessionId = generateId();
     setSessionId(newSessionId);
   
@@ -122,6 +124,7 @@ export default function DigitalDachaApp() {
       session_id: newSessionId,
       source: tracking.source,
       variant: activeVariant,
+      quiz_variant: activeVariant,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
@@ -653,6 +656,7 @@ function ResultScreen({
 }) {
   const [submitted, setSubmitted] = React.useState(false);
   const [ctaLocked, setCtaLocked] = React.useState(false);
+  const activeVariant = getActiveVariant(tracking.variant);
 
   const mindsetIntro = {
     rest: "«Наконец-то отдых» — эта мысль согревает вас при каждом приезде.",
@@ -766,16 +770,17 @@ function ResultScreen({
 
   const handleInterested = () => {
     if (ctaLocked) return;
-
+  
     setCtaLocked(true);
     setSubmitted(true);
-
+  
     sendEvent({
       event_type: "cta_clicked",
       user_id: userId,
       session_id: sessionId,
       source: tracking.source,
       variant: activeVariant,
+      quiz_variant: activeVariant,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
@@ -797,9 +802,8 @@ function ResultScreen({
       );
       return;
     }
-    
+  
     setContactError("");
-    
     setSending(true);
   
     sendEvent({
@@ -808,6 +812,7 @@ function ResultScreen({
       session_id: sessionId,
       source: tracking.source,
       variant: activeVariant,
+      quiz_variant: activeVariant,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
@@ -824,6 +829,7 @@ function ResultScreen({
   
     setTimeout(() => {
       setSubmitted(false);
+      setSending(false);
       onBackToIntro();
     }, 800);
   };
@@ -835,6 +841,7 @@ function ResultScreen({
       session_id: sessionId,
       source: tracking.source,
       variant: activeVariant,
+      quiz_variant: activeVariant,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
