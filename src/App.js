@@ -1,4 +1,5 @@
 import React from "react";
+import { QUIZ_VARIANTS, getActiveVariant } from "./quizVariants";
 
 const WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwAVOPk1Iz6Cnx90NSfeFlhnY9EgLJZzuUFInSnI7pADi7PqR6Lg5_DVk-HnoablJv9/exec";
@@ -45,7 +46,6 @@ function getTrackingParams() {
       params.get("src") ||
       "",
     variant:
-      params.get("utm_campaign") ||
       params.get("variant") ||
       params.get("v") ||
       "",
@@ -167,7 +167,8 @@ export default function DigitalDachaApp() {
         onFinish={({ answers, idealDacha, totalSteps }) => {
           setLoading(true);
 
-          const calculatedProfile = calculateProfile(answers, idealDacha);
+          const activeVariant = getActiveVariant(tracking.variant);
+          const calculatedProfile = calculateProfile(answers, idealDacha, activeVariant);
 
           const submissionPayload = {
             event_type: "quiz_completed",
@@ -175,6 +176,8 @@ export default function DigitalDachaApp() {
             session_id: sessionId,
             source: tracking.source,
             variant: tracking.variant,
+            quiz_variant: activeVariant,
+            questions_count: totalSteps,
             segment: tracking.segment,
             medium: tracking.medium,
             campaign: tracking.campaign,
@@ -318,101 +321,13 @@ function IntroScreen({ onStart }) {
 }
 
 function Quiz({ onFinish, userId, sessionId, tracking }) {
-  const questions = [
-    {
-      type: "single",
-      question: "Когда вы приезжаете на дачу, о чем вы думаете первым делом?",
-      answers: [
-        "Наконец-то отдых, хочу расслабиться",
-        "Надо проверить участок и всё привести в порядок",
-        "Опять куча дел, вряд ли получится нормально отдохнуть",
-        "Нравится заниматься участком, это в удовольствие",
-      ],
-    },
-    {
-      type: "single",
-      question: "Для вас дача в первую очередь это?",
-      answers: [
-        "Отдых и тишина",
-        "Свои овощи и зелень к столу",
-        "Ухоженный участок, которым приятно любоваться",
-        "Чтобы всё было под контролем и ни о чем не беспокоиться",
-      ],
-    },
-    {
-      type: "single",
-      question: "Как вы обычно используете дачу?",
-      answers: [
-        "Живу здесь постоянно",
-        "Бываю почти каждые выходные",
-        "Приезжаю время от времени",
-        "Бываю редко, но за участком кто-то следит",
-        "Почти не бываю, и за участком никто не следит",
-      ],
-    },
-    {
-      type: "single",
-      question: "После выходных, проведенных на даче, вы обычно:",
-      answers: [
-        "Чувствую себя скорее уставшим, чем отдохнувшим",
-        "Немножко устал, но доволен",
-        "Отдохнул и набрался сил",
-        "По-разному бывает",
-      ],
-    },
-    {
-      type: "single",
-      question: "Когда на даче нужно что-то сделать или улучшить, вы обычно:",
-      answers: [
-        "Всегда самому интересно этим заняться",
-        "Звоню знакомым мастерам",
-        "Ищу, кто бы мог это сделать",
-        "Всегда откладываю, пока не станет срочно",
-      ],
-    },
-    {
-      type: "single",
-      question:
-        "Если бы дача занимала на 90% меньше ваших сил, чем бы вы заняли освободившееся время?",
-      answers: [
-        "Чаще звал бы друзей на шашлыки",
-        "Просто лежал бы в гамаке с книгой или любовался природой",
-        "Занялся бы тем, что мне нравится: сажать редкие цветы, поливать газон…",
-        "Ездил бы туда намного реже (чем тогда там еще заниматься?)",
-      ],
-    },
-    {
-      type: "single",
-      question:
-        'Представьте, что у вас есть идеальный личный помощник по даче, который всё умеет и всегда всё помнит. Как бы вы предпочли получать от него вести?',
-      answers: [
-        'Он просто молча все делает, а мне присылает отчет: "Готово, хозяин"',
-        'Он пишет: "Я заметил мох на крыше, и уже подобрал трех мастеров, кого позвать?"',
-        'Он советует: "Через месяц пора стричь туи, записать в календарь?"',
-        "Спасибо, но я лучше сам решу, когда и что мне делать",
-      ],
-    },
-    {
-      type: "single",
-      question: "На даче вам комфортнее когда вы:",
-      answers: [
-        "Принимаю решения, но не занимаюсь рутиной",
-        "Интересное делаю сам, остальное поручаю другим",
-        "Получаю результат без лишнего моего участия",
-        "Держу всё под личным контролем",
-      ],
-    },
-    {
-      type: "text_optional",
-      question:
-        "Какая она — ваша идеальная дача? Можно ответить коротко, в 2–3 словах.",
-      placeholder: "Например: тихая, ухоженная, беззаботная",
-      helper:
-        "Если не затруднить, напишите ваш ответ — это поможет точнее понять Вашу дачу",
-    },
-  ];
+  const activeVariant = getActiveVariant(tracking.variant);
+  const questions = QUIZ_VARIANTS[activeVariant].questions;
 
-  const closedQuestionsCount = 8;
+  const closedQuestionsCount = questions.filter(
+    (q) => q.type === "single"
+  ).length;
+
   const totalSteps = questions.length;
 
   const [step, setStep] = React.useState(0);
@@ -435,6 +350,7 @@ function Quiz({ onFinish, userId, sessionId, tracking }) {
       step_count: currentStepIndex + 1,
       completed: false,
       cta_clicked: false,
+      question_id: questions[currentStepIndex].id || "",
       question: questions[currentStepIndex].question,
       answer: answerText,
     });
@@ -561,7 +477,7 @@ function LoadingScreen() {
   );
 }
 
-function calculateProfile(answers, idealDacha) {
+function calculateProfile(answers, idealDacha, variant = "a") {
   const [
     firstThought,
     mainMeaning,
