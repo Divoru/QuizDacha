@@ -3,6 +3,7 @@ import { QUIZ_VARIANTS, getActiveVariant } from "./quizVariants";
 import {
   calculateProfileForVariant,
   buildResultViewModel,
+  buildLeadModalViewModel,
 } from "./quizProfiles";
 
 const WEBHOOK_URL =
@@ -508,6 +509,7 @@ function ResultScreen({
   
   const activeVariant = getActiveVariant(tracking.variant);
   const resultView = buildResultViewModel(profile, activeVariant);
+  const leadModalView = buildLeadModalViewModel(activeVariant);
 
   const handleInterested = () => {
     if (ctaLocked) return;
@@ -525,6 +527,7 @@ function ResultScreen({
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
+      lead_offer: activeVariant === "b" ? "legal_report" : "demo_access",
       step_index: submission?.step_count || 0,
       step_count: submission?.step_count || 0,
       completed: true,
@@ -538,9 +541,7 @@ function ResultScreen({
   
   const handleSubmitContact = () => {
     if (!contact.trim()) {
-      setContactError(
-        "Пожалуйста, укажите контакт, чтобы мы могли отправить вам демонстрацию"
-      );
+      setContactError(leadModalView.emptyErrorText);
       return;
     }
   
@@ -557,6 +558,7 @@ function ResultScreen({
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
+      lead_offer: activeVariant === "b" ? "legal_report" : "demo_access",
       step_index: submission?.step_count || 0,
       step_count: submission?.step_count || 0,
       completed: true,
@@ -586,6 +588,7 @@ function ResultScreen({
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
+      lead_offer: activeVariant === "b" ? "legal_report" : "demo_access",
       step_index: submission?.step_count || 0,
       step_count: submission?.step_count || 0,
       completed: true,
@@ -687,18 +690,17 @@ function ResultScreen({
           <div className="bg-white text-black rounded-3xl p-6 max-w-sm w-full text-center">
       
             <h2 className="text-xl font-semibold mb-4">
-              Мы подготовили для вас персональную демонстрацию
+              {leadModalView.title}
             </h2>
       
             <p className="text-sm mb-5 text-black/80">
-              На основе ваших ответов мы собрали короткий сценарий,
-              в котором видно, как помощник будет работать именно с вашей дачей.
+              {leadModalView.description}
             </p>
       
             <div className="text-left text-sm mb-5 space-y-2">
-              <div>— подсказывает в нужный момент</div>
-              <div>— помогает не забывать важное</div>
-              <div>— освобождает ваше время</div>
+              {leadModalView.bullets.map((item, index) => (
+                <div key={index}>— {item}</div>
+              ))}
             </div>
       
             <input
@@ -707,29 +709,29 @@ function ResultScreen({
                 setContact(e.target.value);
                 if (contactError) setContactError("");
               }}
-              placeholder="Телефон или почта или мессенджер"
+              placeholder={leadModalView.placeholder}
               className="w-full border border-black/20 rounded-xl p-3 mb-2 outline-none"
             />
-              
+      
             {contactError && (
               <div className="text-red-500 text-sm mb-3 text-left">
                 {contactError}
               </div>
             )}
-                
+      
             <button
               onClick={handleSubmitContact}
               disabled={sending}
               className="w-full bg-black text-white p-3 rounded-xl mb-3"
             >
-              {sending ? "Отправка..." : "Получить доступ к демонстрации"}
+              {sending ? "Отправка..." : leadModalView.submitButtonText}
             </button>
       
             <button
               onClick={handleSkipContact}
               className="text-sm text-black/50 underline"
             >
-              Я еще подумаю...
+              {leadModalView.skipButtonText}
             </button>
       
           </div>
