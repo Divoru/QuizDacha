@@ -286,20 +286,192 @@ function buildResultViewModelA(profile) {
     ctaButtonText: ctaButtonText[profile.delegationReadiness] || "Узнать больше",
   };
 }
+function calculateProfileB(answers, idealDacha) {
+  const [
+    dachaRole,
+    priority,
+    usage,
+    dayReality,
+    problemSolving,
+    mainValue,
+    recentChanges,
+  ] = answers;
 
+  let dachaType = "control";
+  if (priority === "Отдых, друзья, баня") dachaType = "relax";
+  else if (priority === "Огород и урожай") dachaType = "garden";
+  else if (priority === "Красивый участок") dachaType = "beauty";
+  else dachaType = "control";
+
+  let mindset = "balanced";
+  if (dachaRole === "Отдых и расслабление") mindset = "rest";
+  else if (dachaRole === "Место для дел и забот") mindset = "burden";
+  else mindset = "balanced";
+
+  let usageType = "medium";
+  if (usage === "Живу или бываю часто") usageType = "high";
+  else if (usage === "Приезжаю на выходные") usageType = "medium";
+  else usageType = "low";
+
+  let fatigue = "medium";
+  if (dayReality === "Постоянно что-то нужно делать") fatigue = "high";
+  else if (dayReality === "Иногда отвлекают бытовые задачи") fatigue = "medium";
+  else if (dayReality === "В основном отдыхаю") fatigue = "low";
+  else fatigue = "mixed";
+
+  let problemSolvingStyle = "search";
+  if (problemSolving === "Сам") problemSolvingStyle = "diy";
+  else if (problemSolving === "Через знакомых") problemSolvingStyle = "trusted";
+  else if (problemSolving === "Каждый раз ищу заново") problemSolvingStyle = "search";
+  else if (problemSolving === "Стараюсь не заниматься") problemSolvingStyle = "avoid";
+
+  let dreamScenario = "rest";
+  if (mainValue === "Чтобы всё работало без моего участия") dreamScenario = "automation";
+  else if (mainValue === "Чтобы не искать мастеров") dreamScenario = "execution";
+  else if (mainValue === "Чтобы участок был красивым") dreamScenario = "beauty";
+  else if (mainValue === "Чтобы было больше времени на отдых") dreamScenario = "time";
+
+  let developmentLevel = "stable";
+  if (recentChanges === "Несколько новых построек") developmentLevel = "active_growth";
+  else if (recentChanges === "Одна постройка") developmentLevel = "growing";
+  else if (recentChanges === "Ничего нового") developmentLevel = "stable";
+  else if (recentChanges === "Только мелкие доработки") developmentLevel = "light_updates";
+
+  let delegationReadiness = "medium";
+  if (
+    (fatigue === "high" || mindset === "burden") &&
+    (problemSolvingStyle === "search" || problemSolvingStyle === "avoid")
+  ) {
+    delegationReadiness = "high";
+  } else if (fatigue === "low" && problemSolvingStyle === "diy") {
+    delegationReadiness = "low";
+  } else {
+    delegationReadiness = "medium";
+  }
+
+  return {
+    dachaType,
+    mindset,
+    usageType,
+    fatigue,
+    problemSolving: problemSolvingStyle,
+    dreamScenario,
+    developmentLevel,
+    delegationReadiness,
+    raw: {
+      dachaRole,
+      priority,
+      usage,
+      dayReality,
+      problemSolving,
+      mainValue,
+      recentChanges,
+      idealDacha: idealDacha || "",
+    },
+  };
+}
 export function calculateProfileForVariant(answers, idealDacha, variant = "a") {
   if (variant === "b") {
-    // Пока B не готов — безопасно используем A-логику как fallback
-    return calculateProfileA(answers, idealDacha);
+    return calculateProfileB(answers, idealDacha);
   }
 
   return calculateProfileA(answers, idealDacha);
 }
+function buildResultViewModelB(profile) {
+  const titleMap = {
+    relax: "Для вас дача — это место отдыха и восстановления 🌿",
+    garden: "Для вас дача — это польза, урожай и результат 🥕",
+    beauty: "Для вас дача — это красота, уют и ухоженность 🌸",
+    control: "Для вас дача — это порядок, надежность и спокойствие 🏡",
+  };
 
+  const introMap = {
+    rest:
+      "Вы воспринимаете дачу как пространство, где хочется выдохнуть и отключиться от повседневной суеты.",
+    burden:
+      "Похоже, дача для вас — это не только удовольствие, но и зона постоянных забот, решений и ответственности.",
+    balanced:
+      "Вы смотрите на дачу трезво: это и радость, и задачи, которые хочется держать в разумном балансе.",
+  };
+
+  const dachaTextMap = {
+    relax:
+      "Главная ценность для вас — отдых, близкие люди и ощущение, что всё вокруг помогает расслабиться, а не загружает ещё сильнее.",
+    garden:
+      "Для вас важно, чтобы дача приносила реальный результат: урожай, пользу и ощущение, что всё делается не зря.",
+    beauty:
+      "Для вас важно, чтобы участок радовал глаз, выглядел ухоженно и создавал приятное ощущение порядка и гармонии.",
+    control:
+      "Для вас важно, чтобы на даче всё было понятно, исправно и не превращалось в источник неожиданных проблем.",
+  };
+
+  const fatigueTextMap = {
+    high:
+      "Сейчас дача, скорее всего, требует от вас слишком много участия. Это значит, что часть сил уходит не на удовольствие, а на постоянное удержание всего в рабочем состоянии.",
+    medium:
+      "Сейчас дача приносит и удовольствие, и нагрузку. Но уже видно, что часть забот можно было бы снять без потери контроля.",
+    low:
+      "У вас уже есть неплохой уровень комфорта. Значит, дальше можно не спасать ситуацию, а спокойно усиливать удобство и качество жизни.",
+    mixed:
+      "Похоже, всё сильно зависит от сезона и текущих задач. В хорошие периоды дача радует, в напряжённые — быстро начинает забирать внимание.",
+  };
+
+  const problemSolvingTextMap = {
+    diy:
+      "Вы привыкли опираться на себя. Это даёт контроль, но часто требует лишнего времени и включённости.",
+    trusted:
+      "Вы решаете вопросы через знакомых и проверенные контакты. Это удобно, но не всегда быстро и системно.",
+    search:
+      "Каждый новый вопрос часто требует нового поиска. Это один из самых утомительных сценариев для владельца дачи.",
+    avoid:
+      "Похоже, часть вопросов хочется просто отодвинуть — не потому что они не важны, а потому что на них не хочется тратить силы.",
+  };
+
+  const dreamScenarioTextMap = {
+    automation:
+      "Самая ценная перспектива для вас — чтобы дача оставалась в порядке без постоянного личного участия.",
+    execution:
+      "Для вас особенно важно не тратить силы на поиск людей и повторные объяснения — а сразу получать понятное решение.",
+    beauty:
+      "Если убрать лишние заботы, больше энергии останется на то, чтобы участок действительно выглядел так, как вам хочется.",
+    time:
+      "Если высвободить часть усилий, дача сможет снова стать местом отдыха, а не вторым списком дел на выходные.",
+  };
+
+  const assistantFitTextMap = {
+    high:
+      "Вам подойдёт помощник, который не просто напоминает, а помогает быстро наводить порядок в вопросах по даче и снижает объём лишнего участия с вашей стороны.",
+    medium:
+      "Вам подойдёт помощник, который помогает держать всё в поле зрения, подсказывает важное и экономит время на рутинных решениях.",
+    low:
+      "Даже если вы привыкли справляться сами, такой помощник может быть полезен как спокойный инструмент наблюдения, памяти и своевременных подсказок.",
+  };
+
+  const ctaBridgeTextMap = {
+    high:
+      "Спасибо за ваши ответы. Похоже, для вас особенно ценен формат, в котором по даче можно получать понятную картину и меньше тратить сил на организационные мелочи.",
+    medium:
+      "Спасибо за ваши ответы. Уже видно, что для вашей дачи может быть полезен формат регулярных подсказок, наблюдения и заранее подготовленных решений.",
+    low:
+      "Спасибо за ваши ответы. Даже если вы многое держите под контролем сами, дополнительный профессиональный взгляд по вашей даче может оказаться очень полезным.",
+  };
+
+  return {
+    title: titleMap[profile.dachaType] || "Цифровой профиль вашей дачи готов",
+    intro: introMap[profile.mindset] || "",
+    dachaText: dachaTextMap[profile.dachaType] || "",
+    fatigueText: fatigueTextMap[profile.fatigue] || "",
+    problemSolvingText: problemSolvingTextMap[profile.problemSolving] || "",
+    controlStyleText: "",
+    dreamScenarioText: dreamScenarioTextMap[profile.dreamScenario] || "",
+    assistantFitText: assistantFitTextMap[profile.delegationReadiness] || "",
+    ctaBridgeText: ctaBridgeTextMap[profile.delegationReadiness] || "",
+    ctaButtonText: "Получите отчет по Вашей даче по состоянию на 01.05.2026г.",
+  };
+}
 export function buildResultViewModel(profile, variant = "a") {
   if (variant === "b") {
-    // Пока B не готов — безопасно используем A-тексты как fallback
-    return buildResultViewModelA(profile);
+    return buildResultViewModelB(profile);
   }
 
   return buildResultViewModelA(profile);
