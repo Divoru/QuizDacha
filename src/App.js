@@ -624,13 +624,17 @@ function ResultScreen({
           </div>
 
           <div className="mb-5 space-y-3">
-            <div className="bg-white/5 p-3 rounded-xl">
-              {resultView.problemSolvingText}
-            </div>
+            {resultView.problemSolvingText && (
+              <div className="bg-white/5 p-3 rounded-xl">
+                {resultView.problemSolvingText}
+              </div>
+            )}
           
-            <div className="bg-white/5 p-3 rounded-xl">
-              {resultView.controlStyleText}
-            </div>
+            {resultView.controlStyleText && (
+              <div className="bg-white/5 p-3 rounded-xl">
+                {resultView.controlStyleText}
+              </div>
+            )}
           </div>
 
           <div className="mb-5 bg-green-400/10 border border-green-400/20 p-4 rounded-2xl">
