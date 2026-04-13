@@ -112,6 +112,7 @@ export default function DigitalDachaApp() {
     if (!userId) return;
   
     const activeVariant = getActiveVariant(tracking.variant);
+    const questionsCount = QUIZ_VARIANTS[activeVariant].questions.length;
   
     const newSessionId = generateId();
     setSessionId(newSessionId);
@@ -129,6 +130,7 @@ export default function DigitalDachaApp() {
       source: tracking.source,
       variant: activeVariant,
       quiz_variant: activeVariant,
+      questions_count: questionsCount,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
@@ -354,11 +356,13 @@ function Quiz({ onFinish, userId, sessionId, tracking }) {
       session_id: sessionId,
       source: tracking.source,
       variant: activeVariant,
+      quiz_variant: activeVariant,
       segment: tracking.segment,
       medium: tracking.medium,
       campaign: tracking.campaign,
       step_index: currentStepIndex + 1,
       step_count: currentStepIndex + 1,
+      questions_count: totalSteps,
       completed: false,
       cta_clicked: false,
       question_id: questions[currentStepIndex].id || "",
@@ -498,118 +502,12 @@ function ResultScreen({
 }) {
   const [submitted, setSubmitted] = React.useState(false);
   const [ctaLocked, setCtaLocked] = React.useState(false);
+  const [contact, setContact] = React.useState("");
+  const [sending, setSending] = React.useState(false);
+  const [contactError, setContactError] = React.useState("");
+  
   const activeVariant = getActiveVariant(tracking.variant);
   const resultView = buildResultViewModel(profile, activeVariant);
-
-  const mindsetIntro = {
-    rest: "«Наконец-то отдых» — эта мысль согревает вас при каждом приезде.",
-    check:
-      "Вы относитесь к даче ответственно: первым делом — убедиться, что всё в порядке.",
-    tired:
-      "«Опять куча дел» — знакомое чувство? Вы приезжаете с мыслью о бесконечном списке.",
-    joy: "Вам нравится сам процесс заботы об участке — это ваша отдушина.",
-  };
-
-  const dachaTypeContent = {
-    relax: {
-      title: "Ваша дача — это пространство покоя и тишины 🌿",
-      text: "Главное здесь — отключиться от городской суеты и восстановить силы.",
-    },
-    garden: {
-      title: "Ваша дача — это источник урожая и пользы 🥕",
-      text: "Вы цените возможность выращивать своё, а не только отдыхать.",
-    },
-    beauty: {
-      title: "Ваша дача — это пространство красоты и вдохновения 🌸",
-      text: "Для вас важно, чтобы участок радовал глаз и выглядел ухоженно.",
-    },
-    control: {
-      title: "Ваша дача — это зона вашего спокойствия 🏡",
-      text: "Вы хотите быть уверены, что всё под контролем, и ничто не отвлекает от отдыха.",
-    },
-  };
-
-  const fatigueText = {
-    high:
-      "После выходных вы чувствуете себя уставшим — как будто сменили один вид работы на другой. Это сигнал, что дача забирает больше сил, чем даёт.",
-    medium:
-      "Вы немного устаёте, но довольны результатом. Однако даже эту усталость можно уменьшить, оставив только приятные хлопоты.",
-    low:
-      "Вы возвращаетесь отдохнувшим и полным сил — значит, текущий ритм вам подходит.",
-    mixed:
-      "Бывает по-разному, но в глубине души хочется, чтобы хороших дней было больше.",
-  };
-
-  const problemSolvingText = {
-    diy:
-      "Вы любите разбираться во всём самостоятельно. Вам не нужен тот, кто сделает за вас, но нужен тот, кто подскажет, направит и упростит поиск решений.",
-    trusted:
-      "У вас есть проверенные мастера, но их контакты не всегда под рукой, а иногда их занятость подводит.",
-    search:
-      "Каждый раз поиск исполнителя превращается в квест. Это отнимает время и нервы, которых на даче должно быть в избытке.",
-    procrastinate:
-      "Вы откладываете задачи до последнего, потому что не хочется тратить на это драгоценные выходные. Знакомо?",
-  };
-
-  const controlStyleText = {
-    director:
-      "Вы — Режиссёр. Вы принимаете ключевые решения, но не хотите погружаться в рутину поиска и контроля. Вам нужен надёжный «второй пилот».",
-    partner:
-      "Вы — Партнёр. Всё интересное вы делаете сами, а скучное и техническое готовы доверить тому, кто разбирается.",
-    owner:
-      "Вы — Владелец. Вам важен результат: красивый участок и работающие системы. Как это достигается — не ваша забота.",
-    guard:
-      "Вы — Хранитель порядка. Вам важно держать руку на пульсе и быть в курсе всего, что происходит. Но даже Хранителю нужен надёжный инструмент наблюдения и подсказок.",
-  };
-
-  const dreamScenarioText = {
-    social:
-      "Если освободить время, вы бы чаще звали друзей на шашлыки и наслаждались общением.",
-    relax:
-      "Если освободить время, вы бы просто лежали в гамаке с книгой или любовались природой — без чувства вины.",
-    hobby:
-      "Если освободить время, вы бы занялись тем, что вам по-настоящему нравится: редкие цветы, уход за газоном, создание уюта.",
-    leave:
-      "Честно говоря, если бы дача не требовала столько сил, вы бы, возможно, ездили туда гораздо реже. Но ситуацию можно изменить, не отказываясь от дачи.",
-  };
-
-  const assistantFitText = {
-    silent:
-      "Вам подходит помощник, который действует тихо и присылает только отчёт: «Готово, можно отдыхать».",
-    consult:
-      "Вам подходит помощник, который замечает важное, предлагает варианты и спрашивает ваше решение.",
-    planner:
-      "Вам подходит помощник-планировщик: он напоминает о сезонных делах и помогает ничего не упустить.",
-    self:
-      "Вы предпочитаете решать всё сами, но даже в этом случае иметь под рукой базу знаний и проверенных мастеров — никогда не лишнее.",
-  };
-
-  const ctaBridgeText = {
-    high:
-      "Если вы хотите, чтобы дача перестала забирать силы и начала приносить чистое удовольствие — этот помощник создан для вас.",
-    medium:
-      "Даже если вы отлично справляетесь сами, иметь под рукой того, кто ничего не забывает и вовремя подскажет — значит сохранить силы для того, что вам действительно важно. Хотите посмотреть, как это будет работать именно для вашей дачи?",
-    low: `Вы хорошо чувствуете свою дачу.
-    
-    Но иногда даже опытным дачникам не хватает одной вещи —
-    чтобы кто-то вовремя подсказал.
-    
-    Напомнил о заморозках, ❄️
-    посоветовал удачный сорт 🌱
-    или просто подкинул идею для отличного шашлыка. 🔥
-    
-    Такой «цифровой сосед», с которым проще и интереснее.
-    
-    Хотите посмотреть, как это может работать у вас?`,
-  };
-
-  const ctaButtonText = {
-    high: "Да, хочу посмотреть, как это работает",
-    medium: "Да, покажите, что он умеет",
-    low: "Посмотреть возможности помощника",
-  };
-
-  const data = dachaTypeContent[profile.dachaType];
 
   const handleInterested = () => {
     if (ctaLocked) return;
@@ -701,10 +599,6 @@ function ResultScreen({
     setSubmitted(false);
     onBackToIntro();
   };
-
-  const [contact, setContact] = React.useState("");
-  const [sending, setSending] = React.useState(false);
-  const [contactError, setContactError] = React.useState("");
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-5 py-8">
