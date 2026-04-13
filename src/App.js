@@ -1,5 +1,9 @@
 import React from "react";
 import { QUIZ_VARIANTS, getActiveVariant } from "./quizVariants";
+import {
+  calculateProfileForVariant,
+  buildResultViewModel,
+} from "./quizProfiles";
 
 const WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwAVOPk1Iz6Cnx90NSfeFlhnY9EgLJZzuUFInSnI7pADi7PqR6Lg5_DVk-HnoablJv9/exec";
@@ -171,7 +175,11 @@ export default function DigitalDachaApp() {
           setLoading(true);
 
           const activeVariant = getActiveVariant(tracking.variant);
-          const calculatedProfile = calculateProfile(answers, idealDacha, activeVariant);
+          const calculatedProfile = calculateProfileForVariant(
+            answers,
+            idealDacha,
+            activeVariant
+          );
 
           const submissionPayload = {
             event_type: "quiz_completed",
@@ -480,172 +488,6 @@ function LoadingScreen() {
   );
 }
 
-function calculateProfile(answers, idealDacha, variant = "a") {
-  const [
-    firstThought,
-    mainMeaning,
-    usage,
-    afterWeekend,
-    fixingBehavior,
-    freedTime,
-    assistantStyleAnswer,
-    role,
-  ] = answers;
-
-  let dachaType = "control";
-
-  if (mainMeaning === "Отдых и тишина") dachaType = "relax";
-  else if (mainMeaning === "Свои овощи и зелень к столу") dachaType = "garden";
-  else if (mainMeaning === "Ухоженный участок, которым приятно любоваться")
-    dachaType = "beauty";
-  else if (
-    mainMeaning === "Чтобы всё было под контролем и ни о чем не беспокоиться"
-  )
-    dachaType = "control";
-
-  let mindset = "check";
-  if (firstThought === "Наконец-то отдых, хочу расслабиться") mindset = "rest";
-  else if (
-    firstThought === "Надо проверить участок и всё привести в порядок"
-  )
-    mindset = "check";
-  else if (
-    firstThought === "Опять куча дел, вряд ли получится нормально отдохнуть"
-  )
-    mindset = "tired";
-  else if (
-    firstThought === "Нравится заниматься участком, это в удовольствие"
-  )
-    mindset = "joy";
-
-  let usageType = "medium";
-  if (
-    usage === "Живу здесь постоянно" ||
-    usage === "Бываю почти каждые выходные"
-  ) {
-    usageType = "high";
-  } else if (usage === "Приезжаю время от времени") {
-    usageType = "medium";
-  } else {
-    usageType = "low";
-  }
-
-  let fatigue = "medium";
-  if (afterWeekend === "Чувствую себя скорее уставшим, чем отдохнувшим") {
-    fatigue = "high";
-  } else if (afterWeekend === "Немножко устал, но доволен") {
-    fatigue = "medium";
-  } else if (afterWeekend === "Отдохнул и набрался сил") {
-    fatigue = "low";
-  } else {
-    fatigue = "mixed";
-  }
-
-  let problemSolving = "search";
-  if (fixingBehavior === "Всегда самому интересно этим заняться") {
-    problemSolving = "diy";
-  } else if (fixingBehavior === "Звоню знакомым мастерам") {
-    problemSolving = "trusted";
-  } else if (fixingBehavior === "Ищу, кто бы мог это сделать") {
-    problemSolving = "search";
-  } else if (fixingBehavior === "Всегда откладываю, пока не станет срочно") {
-    problemSolving = "procrastinate";
-  }
-
-  let dreamScenario = "relax";
-  if (freedTime === "Чаще звал бы друзей на шашлыки") {
-    dreamScenario = "social";
-  } else if (
-    freedTime === "Просто лежал бы в гамаке с книгой или любовался природой"
-  ) {
-    dreamScenario = "relax";
-  } else if (
-    freedTime ===
-    "Занялся бы тем, что мне нравится: сажать редкие цветы, поливать газон…"
-  ) {
-    dreamScenario = "hobby";
-  } else if (
-    freedTime === "Ездил бы туда намного реже (чем тогда там еще заниматься?)"
-  ) {
-    dreamScenario = "leave";
-  }
-
-  let assistantStyle = "planner";
-  if (
-    assistantStyleAnswer ===
-    'Он просто молча все делает, а мне присылает отчет: "Готово, хозяин"'
-  ) {
-    assistantStyle = "silent";
-  } else if (
-    assistantStyleAnswer ===
-    'Он пишет: "Я заметил мох на крыше, и уже подобрал трех мастеров, кого позвать?"'
-  ) {
-    assistantStyle = "consult";
-  } else if (
-    assistantStyleAnswer ===
-    'Он советует: "Через месяц пора стричь туи, записать в календарь?"'
-  ) {
-    assistantStyle = "planner";
-  } else if (
-    assistantStyleAnswer === "Спасибо, но я лучше сам решу, когда и что мне делать"
-  ) {
-    assistantStyle = "self";
-  }
-
-  let controlStyle = "director";
-  if (role === "Принимаю решения, но не занимаюсь рутиной") {
-    controlStyle = "director";
-  } else if (role === "Интересное делаю сам, остальное поручаю другим") {
-    controlStyle = "partner";
-  } else if (role === "Получаю результат без лишнего моего участия") {
-    controlStyle = "owner";
-  } else if (role === "Держу всё под личным контролем") {
-    controlStyle = "guard";
-  }
-
-  let delegationReadiness = "medium";
-  if (fatigue === "high" && controlStyle !== "guard") {
-    delegationReadiness = "high";
-  } else if (fatigue === "medium" || controlStyle === "guard") {
-    delegationReadiness = "medium";
-  } else {
-    delegationReadiness = "low";
-  }
-
-  let primaryPain = "uncertainty";
-  if (problemSolving === "search" || problemSolving === "trusted") {
-    primaryPain = "uncertainty";
-  } else if (problemSolving === "procrastinate" || mindset === "tired") {
-    primaryPain = "effort";
-  } else if (dreamScenario === "social" || dreamScenario === "relax") {
-    primaryPain = "time";
-  }
-
-  return {
-    dachaType,
-    mindset,
-    usageType,
-    fatigue,
-    problemSolving,
-    dreamScenario,
-    assistantStyle,
-    controlStyle,
-    delegationReadiness,
-    primaryPain,
-    raw: {
-      firstThought,
-      mainMeaning,
-      usage,
-      afterWeekend,
-      fixingBehavior,
-      freedTime,
-      assistantStyleAnswer,
-      role,
-      idealDacha: idealDacha || "",
-    },
-  };
-}
-
 function ResultScreen({
   profile,
   submission,
@@ -657,6 +499,7 @@ function ResultScreen({
   const [submitted, setSubmitted] = React.useState(false);
   const [ctaLocked, setCtaLocked] = React.useState(false);
   const activeVariant = getActiveVariant(tracking.variant);
+  const resultView = buildResultViewModel(profile, activeVariant);
 
   const mindsetIntro = {
     rest: "«Наконец-то отдых» — эта мысль согревает вас при каждом приезде.",
@@ -871,42 +714,42 @@ function ResultScreen({
             Цифровой профиль вашей дачи готов
           </div>
 
-          <h1 className="text-2xl mb-4">{data.title}</h1>
+          <h1 className="text-2xl mb-4">{resultView.title}</h1>
 
           <p className="mb-4 text-white/85 leading-relaxed">
-            {mindsetIntro[profile.mindset]}
+            {resultView.intro}
           </p>
 
           <p className="mb-4 text-white/80 leading-relaxed">
-            {data.text}
+            {resultView.dachaText}
           </p>
 
           <div className="mb-5 bg-white/10 border border-white/10 p-4 rounded-2xl">
             <div className="text-sm text-white/40 mb-1">Как сейчас</div>
-            <div className="text-white">{fatigueText[profile.fatigue]}</div>
+            <div className="text-white">{resultView.fatigueText}</div>
           </div>
 
           <div className="mb-5 space-y-3">
             <div className="bg-white/5 p-3 rounded-xl">
-              {problemSolvingText[profile.problemSolving]}
+              {resultView.problemSolvingText}
             </div>
           
             <div className="bg-white/5 p-3 rounded-xl">
-              {controlStyleText[profile.controlStyle]}
+              {resultView.controlStyleText}
             </div>
           </div>
 
           <div className="mb-5 bg-green-400/10 border border-green-400/20 p-4 rounded-2xl">
             <div className="text-sm text-green-300 mb-1">Как может быть</div>
             <div className="text-white/90">
-              {dreamScenarioText[profile.dreamScenario]}
+              {resultView.dreamScenarioText}
             </div>
           </div>
 
           <div className="mb-6 p-4 rounded-2xl bg-green-400/15 border border-green-400/30">
             <div className="text-sm text-green-300 mb-1">Ваш формат</div>
             <div className="text-white font-medium">
-              {assistantFitText[profile.assistantStyle]}
+              {resultView.assistantFitText}
             </div>
           </div>
 
@@ -922,7 +765,7 @@ function ResultScreen({
           )}
 
           <div className="mb-6 text-white text-base leading-relaxed">
-            {ctaBridgeText[profile.delegationReadiness]}
+            {resultView.ctaBridgeText}
           </div>
 
           <button
@@ -935,8 +778,8 @@ function ResultScreen({
             }`}
           >
             {ctaLocked
-              ? "Интерес уже зафиксирован"
-              : ctaButtonText[profile.delegationReadiness]}
+              ? "Спасибо за проявленный интерес"
+              : resultView.ctaButtonText}
           </button>
         </div>
       </div>
