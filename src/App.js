@@ -508,6 +508,7 @@ function ResultScreen({
   const [contactError, setContactError] = React.useState("");
   
   const activeVariant = getActiveVariant(tracking.variant);
+  const isVariantB = activeVariant === "b";
   const resultView = buildResultViewModel(profile, activeVariant);
   const leadModalView = buildLeadModalViewModel(activeVariant);
 
@@ -649,81 +650,134 @@ function ResultScreen({
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-5 py-8">
       <div className="w-full max-w-md">
         <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-          <div className="text-green-300 text-sm mb-3">
-            Цифровой профиль вашей дачи готов
-          </div>
-
-          <h1 className="text-2xl mb-4">{resultView.title}</h1>
-
-          <p className="mb-4 text-white/85 leading-relaxed">
-            {resultView.intro}
-          </p>
-
-          <p className="mb-4 text-white/80 leading-relaxed">
-            {resultView.dachaText}
-          </p>
-
-          <div className="mb-5 bg-white/10 border border-white/10 p-4 rounded-2xl">
-            <div className="text-sm text-white/40 mb-1">Как сейчас</div>
-            <div className="text-white">{resultView.fatigueText}</div>
-          </div>
-
-          <div className="mb-5 space-y-3">
-            {resultView.problemSolvingText && (
-              <div className="bg-white/5 p-3 rounded-xl">
-                {resultView.problemSolvingText}
+          {isVariantB ? (
+            <>
+              <div className="text-green-300 text-sm mb-3">
+                Спасибо за ваши ответы
               </div>
-            )}
-          
-            {resultView.controlStyleText && (
-              <div className="bg-white/5 p-3 rounded-xl">
-                {resultView.controlStyleText}
-              </div>
-            )}
-          </div>
 
-          <div className="mb-5 bg-green-400/10 border border-green-400/20 p-4 rounded-2xl">
-            <div className="text-sm text-green-300 mb-1">Как может быть</div>
-            <div className="text-white/90">
-              {resultView.dreamScenarioText}
-            </div>
-          </div>
+              <h1 className="text-2xl mb-4">
+                Спокойствие за дачу начинается с понимания
+              </h1>
 
-          <div className="mb-6 p-4 rounded-2xl bg-green-400/15 border border-green-400/30">
-            <div className="text-sm text-green-300 mb-1">Ваш формат</div>
-            <div className="text-white font-medium">
-              {resultView.assistantFitText}
-            </div>
-          </div>
+              <div className="mb-6 text-white text-base leading-relaxed whitespace-pre-line">
+                {`Спасибо за ваши ответы.
 
-          {profile.raw.idealDacha && (
-            <div className="mb-6 rounded-2xl bg-green-400/10 border border-green-400/20 p-4">
-              <div className="text-sm text-green-300 mb-2">
-                Ваша идеальная дача
+                Спокойствие за дачу начинается с простого —
+                понимания, что с ней всё в порядке.
+                
+                Особенно с юридической стороны,
+                о которой чаще всего вспоминают слишком поздно.
+                
+                В благодарность за ваши ответы
+                наши специалисты подготовят для вас
+                бесплатный отчет по вашей даче.`}
               </div>
-              <div className="text-white/90 italic">
-                “{profile.raw.idealDacha}”
+
+              <div className="mb-6 bg-white/5 p-4 rounded-xl text-sm text-white/80">
+                <div className="mb-2 font-medium text-white">
+                  В отчете:
+                </div>
+                <div className="space-y-1">
+                  <div>— проверка юридического состояния</div>
+                  <div>— возможные риски и спорные вопросы</div>
+                  <div>— рекомендации, на что обратить внимание</div>
+                </div>
               </div>
-            </div>
+
+              <button
+                onClick={handleInterested}
+                disabled={ctaLocked}
+                className={`w-full p-4 rounded-xl font-semibold text-base transition transform ${
+                  ctaLocked
+                    ? "bg-green-300 text-black/60 cursor-not-allowed"
+                    : "bg-green-400 text-black hover:scale-105"
+                }`}
+              >
+                {ctaLocked
+                  ? "Спасибо за проявленный интерес"
+                  : "Заказать бесплатный отчет"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-green-300 text-sm mb-3">
+                Цифровой профиль вашей дачи готов
+              </div>
+
+              <h1 className="text-2xl mb-4">{resultView.title}</h1>
+
+              <p className="mb-4 text-white/85 leading-relaxed">
+                {resultView.intro}
+              </p>
+
+              <p className="mb-4 text-white/80 leading-relaxed">
+                {resultView.dachaText}
+              </p>
+
+              <div className="mb-5 bg-white/10 border border-white/10 p-4 rounded-2xl">
+                <div className="text-sm text-white/40 mb-1">Как сейчас</div>
+                <div className="text-white">{resultView.fatigueText}</div>
+              </div>
+
+              <div className="mb-5 space-y-3">
+                {resultView.problemSolvingText && (
+                  <div className="bg-white/5 p-3 rounded-xl">
+                    {resultView.problemSolvingText}
+                  </div>
+                )}
+
+                {resultView.controlStyleText && (
+                  <div className="bg-white/5 p-3 rounded-xl">
+                    {resultView.controlStyleText}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-5 bg-green-400/10 border border-green-400/20 p-4 rounded-2xl">
+                <div className="text-sm text-green-300 mb-1">Как может быть</div>
+                <div className="text-white/90">
+                  {resultView.dreamScenarioText}
+                </div>
+              </div>
+
+              <div className="mb-6 p-4 rounded-2xl bg-green-400/15 border border-green-400/30">
+                <div className="text-sm text-green-300 mb-1">Ваш формат</div>
+                <div className="text-white font-medium">
+                  {resultView.assistantFitText}
+                </div>
+              </div>
+
+              {profile.raw.idealDacha && (
+                <div className="mb-6 rounded-2xl bg-green-400/10 border border-green-400/20 p-4">
+                  <div className="text-sm text-green-300 mb-2">
+                    Ваша идеальная дача
+                  </div>
+                  <div className="text-white/90 italic">
+                    “{profile.raw.idealDacha}”
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6 text-white text-base leading-relaxed whitespace-pre-line">
+                {resultView.ctaBridgeText}
+              </div>
+
+              <button
+                onClick={handleInterested}
+                disabled={ctaLocked}
+                className={`w-full p-4 rounded-xl font-semibold text-base transition transform ${
+                  ctaLocked
+                    ? "bg-green-300 text-black/60 cursor-not-allowed"
+                    : "bg-green-400 text-black hover:scale-105"
+                }`}
+              >
+                {ctaLocked
+                  ? "Спасибо за проявленный интерес"
+                  : resultView.ctaButtonText}
+              </button>
+            </>
           )}
-
-          <div className="mb-6 text-white text-base leading-relaxed whitespace-pre-line">
-            {resultView.ctaBridgeText}
-          </div>
-
-          <button
-            onClick={handleInterested}
-            disabled={ctaLocked}
-            className={`w-full p-4 rounded-xl font-semibold text-base transition transform ${
-              ctaLocked
-                ? "bg-green-300 text-black/60 cursor-not-allowed"
-                : "bg-green-400 text-black hover:scale-105"
-            }`}
-          >
-            {ctaLocked
-              ? "Спасибо за проявленный интерес"
-              : resultView.ctaButtonText}
-          </button>
         </div>
       </div>
 
