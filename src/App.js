@@ -665,7 +665,7 @@ function ResultScreen({
             </div>
           )}
 
-          <div className="mb-6 text-white text-base leading-relaxed">
+          <div className="mb-6 text-white text-base leading-relaxed whitespace-pre-line">
             {resultView.ctaBridgeText}
           </div>
 
