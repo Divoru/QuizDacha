@@ -497,7 +497,7 @@ export function buildResultViewModel(profile, variant = "a") {
 export function buildLeadModalViewModel(variant = "a") {
   if (variant === "b") {
     return {
-      title: "Куда отправить ваш бесплатный отчет?",
+      title: "Куда отправить отчет по вашей даче?",
       description:
         "На основе ваших ответов мы подготовим для вас короткий отчет по даче и передадим его нашему кадастровому инженеру для бесплатной юридической проверки.",
       bullets: [
