@@ -542,9 +542,24 @@ function ResultScreen({
   function isValidContact(value) {
     const v = value.trim();
   
-    // 📞 Телефон (минимум 7 цифр)
-    const phone = v.replace(/\D/g, "");
-    if (phone.length >= 7) return true;
+    // 📞 Телефон (RU логика)
+    const digits = v.replace(/\D/g, "");
+    
+    // длина 10–12 цифр
+    if (digits.length >= 10 && digits.length <= 12) {
+      // случай: 10 цифр → должно начинаться с 9
+      if (digits.length === 10 && digits.startsWith("9")) {
+        return true;
+      }
+    
+      // случай: 11–12 цифр → начинается с 7 или 8, дальше 9
+      if (
+        (digits.startsWith("7") || digits.startsWith("8")) &&
+        digits[1] === "9"
+      ) {
+        return true;
+      }
+    }
   
     // 📧 Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
