@@ -538,10 +538,37 @@ function ResultScreen({
       profile_type: profile.dachaType,
     });
   };
+
+  function isValidContact(value) {
+    const v = value.trim();
+  
+    // 📞 Телефон (минимум 7 цифр)
+    const phone = v.replace(/\D/g, "");
+    if (phone.length >= 7) return true;
+  
+    // 📧 Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(v)) return true;
+  
+    // 💬 Username (Telegram, Instagram и т.п.)
+    const usernameRegex = /@[a-zA-Z0-9_]{3,}/;
+    if (usernameRegex.test(v)) return true;
+  
+    return false;
+  }
   
   const handleSubmitContact = () => {
-    if (!contact.trim()) {
+    const value = contact.trim();
+  
+    if (!value) {
       setContactError(leadModalView.emptyErrorText);
+      return;
+    }
+  
+    if (!isValidContact(value)) {
+      setContactError(
+        "Похоже, контакт введен некорректно. Проверьте, пожалуйста"
+      );
       return;
     }
   
@@ -563,7 +590,7 @@ function ResultScreen({
       step_count: submission?.step_count || 0,
       completed: true,
       cta_clicked: true,
-      contact: contact.trim(),
+      contact: value,
       answers: submission?.answers || [],
       ideal_dacha: submission?.ideal_dacha || "",
       profile: profile,
